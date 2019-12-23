@@ -1,6 +1,7 @@
 import { configureStore, getDefaultMiddleware } from "@reduxjs/redux-toolkit";
 import imagesReducer from "./reducers/imagesReducer";
 import apiMiddleware from "./middlewares/apiMiddleware";
+import dialogReducer from "./reducers/dialogReducer";
 
 const defaultMiddlewars = getDefaultMiddleware({
   serializableCheck: false
@@ -9,7 +10,8 @@ const defaultMiddlewars = getDefaultMiddleware({
 const store = configureStore({
   middleware: [...defaultMiddlewars, apiMiddleware],
   reducer: {
-    images: imagesReducer
+    images: imagesReducer,
+    dialog: dialogReducer
   }
 });
 

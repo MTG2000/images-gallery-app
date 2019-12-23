@@ -1,34 +1,19 @@
 import React, { useEffect } from "react";
-import { makeStyles, Grid } from "@material-ui/core";
+import { Grid, Box } from "@material-ui/core";
 import ClearBtn from "./ClearBtn";
 import { fetchImages } from "../../Redux/actions/imagesAction";
 import { connect } from "react-redux";
 import { SET_REFRESH } from "../../Redux/reducers/imagesReducer";
-
-const useStyles = makeStyles({
-  imgWrapper: {
-    width: 350,
-    height: 196,
-    padding: 4,
-    background: "#f1f1f1",
-    margin: "0"
-  },
-  img: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    objectPosition: "center top"
-  }
-});
+import Image from "../Image";
+import { OPEN_DIALOG } from "../../Redux/reducers/dialogReducer";
 
 const ImagesGallery = ({
   images,
   refresh,
   fetchImages,
-  SET_REFRESH: setRefresh
+  SET_REFRESH: setRefresh,
+  OPEN_DIALOG
 }) => {
-  const classes = useStyles();
-
   useEffect(() => {
     if (refresh) {
       fetchImages();
@@ -36,22 +21,30 @@ const ImagesGallery = ({
     }
   }, [refresh, fetchImages, setRefresh]);
 
+  const handleImageClick = src => {
+    OPEN_DIALOG({
+      content: <Image src={src} />
+    });
+  };
+
   return (
     <>
       <Grid container>
         <Grid container justify="center">
           {images.map((image, index) => (
-            <div key={index} className={classes.imgWrapper}>
-              <img
+            <div key={index} onClick={() => handleImageClick(image)}>
+              <Image
                 src={image}
-                alt="thumb"
-                key={index}
-                className={classes.img}
+                width={350}
+                height={196}
+                imgWrapperStyle={{ padding: 4 }}
+                pointerOnHover
               />
             </div>
           ))}
         </Grid>
       </Grid>
+      <Box py={2} />
       <ClearBtn />
     </>
   );
@@ -62,6 +55,8 @@ const mapStateToProps = state => ({
   refresh: state.images.refresh
 });
 
-export default connect(mapStateToProps, { fetchImages, SET_REFRESH })(
-  ImagesGallery
-);
+export default connect(mapStateToProps, {
+  fetchImages,
+  SET_REFRESH,
+  OPEN_DIALOG
+})(ImagesGallery);

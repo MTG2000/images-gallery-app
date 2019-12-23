@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import { Container, Typography, Box, Button } from "@material-ui/core";
 import DragAndDropArea from "../DragAndDropArea";
 import ThumbsGallery from "./thumbsGallery";
+import { uploadImages } from "../../Redux/actions/imagesAction";
+import { SET_THUMBS } from "../../Redux/reducers/imagesReducer";
+import { connect } from "react-redux";
 
-const ImagesUploader = ({ onUpload }) => {
-  const [thumbs, setThumbs] = useState([]);
+const ImagesUploader = ({ uploadImages, thumbs, SET_THUMBS: setThumbs }) => {
   const [files, setFiles] = useState([]);
 
   const onDrop = files => {
     setThumbs(files.map(f => URL.createObjectURL(f)));
     setFiles(files);
-    console.log(files);
   };
 
   const handleSubmit = async e => {
@@ -18,15 +19,8 @@ const ImagesUploader = ({ onUpload }) => {
     const body = new FormData(e.target);
     body.delete("images");
     files.forEach(file => body.append("images", file));
-
-    let response = await fetch("/upload/photos", {
-      method: "POST",
-      body
-    });
-    let result = await response.json();
-    console.log(result);
+    uploadImages(body);
     setThumbs([]);
-    onUpload();
   };
 
   return (
@@ -46,5 +40,10 @@ const ImagesUploader = ({ onUpload }) => {
     </Container>
   );
 };
+const mapStateToProps = state => ({
+  thumbs: state.images.thumbs
+});
 
-export default ImagesUploader;
+export default connect(mapStateToProps, { uploadImages, SET_THUMBS })(
+  ImagesUploader
+);

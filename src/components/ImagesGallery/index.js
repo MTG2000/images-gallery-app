@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles, Grid } from "@material-ui/core";
 import ClearBtn from "./ClearBtn";
+import { fetchImages } from "../../Redux/actions/imagesAction";
+import { connect } from "react-redux";
+import { SET_REFRESH } from "../../Redux/reducers/imagesReducer";
 
 const useStyles = makeStyles({
   imgWrapper: {
@@ -18,8 +21,21 @@ const useStyles = makeStyles({
   }
 });
 
-const ImagesGallery = ({ images = [] }) => {
+const ImagesGallery = ({
+  images,
+  refresh,
+  fetchImages,
+  SET_REFRESH: setRefresh
+}) => {
   const classes = useStyles();
+
+  useEffect(() => {
+    if (refresh) {
+      fetchImages();
+      setRefresh(false);
+    }
+  }, [refresh, fetchImages, setRefresh]);
+
   return (
     <>
       <Grid container>
@@ -41,4 +57,11 @@ const ImagesGallery = ({ images = [] }) => {
   );
 };
 
-export default ImagesGallery;
+const mapStateToProps = state => ({
+  images: state.images.imgsGallery,
+  refresh: state.images.refresh
+});
+
+export default connect(mapStateToProps, { fetchImages, SET_REFRESH })(
+  ImagesGallery
+);

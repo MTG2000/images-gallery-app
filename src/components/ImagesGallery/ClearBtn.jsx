@@ -1,13 +1,13 @@
 import React from "react";
 import { Grid, Button } from "@material-ui/core";
+import { deleteAllImages } from "../../Redux/actions/imagesAction";
+import { SET_REFRESH } from "../../Redux/reducers/imagesReducer";
+import { connect } from "react-redux";
 
-const ClearBtn = () => {
+const ClearBtn = ({ deleteAllImages, SET_REFRESH: setRefresh }) => {
   const handleDelete = async () => {
-    let response = await fetch("/images/all", {
-      method: "DELETE"
-    });
-    let result = await response.json();
-    console.log(result);
+    deleteAllImages();
+    setRefresh(true);
   };
 
   return (
@@ -23,4 +23,4 @@ const ClearBtn = () => {
   );
 };
 
-export default ClearBtn;
+export default connect(null, { deleteAllImages, SET_REFRESH })(ClearBtn);
